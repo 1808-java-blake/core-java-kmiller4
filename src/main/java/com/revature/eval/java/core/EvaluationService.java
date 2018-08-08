@@ -1,8 +1,10 @@
 package com.revature.eval.java.core;
 
 import java.time.temporal.Temporal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.*;
 
 public class EvaluationService {
 
@@ -29,9 +31,17 @@ public class EvaluationService {
 	 * @param phrase
 	 * @return
 	 */
+	//Take the first letter of each word and combine them
 	public String acronym(String phrase) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		char arr[] = phrase.toCharArray(); // convert the String object to array of char
+		String acro = "";
+		for(int i = 0; i < arr.length; i++){
+			if(arr[i] != ' ' && arr[i] != '-' && (i==0 || arr[i-1] == ' ' || arr[i-1] == '-')) {
+				acro += arr[i];
+			}
+		}
+		acro = acro.toUpperCase();
+		return acro;
 	}
 
 	/**
@@ -84,18 +94,43 @@ public class EvaluationService {
 		}
 
 		public boolean isEquilateral() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			if(this.sideOne == this.sideTwo && this.sideOne == this.sideThree) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		public boolean isIsosceles() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			//triangle must have at least two equal sides
+			int numEqualSides = 0;
+			if(this.sideOne == this.sideTwo) {
+				numEqualSides++;
+			}
+			if(this.sideTwo == this.sideThree) {
+				numEqualSides++;
+			}
+			if(this.sideOne == this.sideThree) {
+				numEqualSides++;
+			}
+			if(numEqualSides >= 1) {
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 
 		public boolean isScalene() {
-			// TODO Write an implementation for this method declaration
-			return false;
+			//if none of the sides are equal then it is scalene
+			if(this.sideOne != this.sideTwo && this.sideOne != this.sideThree && this.sideTwo != this.sideThree) {
+				return true;
+			}
+			else {
+				return false;
+			}
+
 		}
 
 	}
@@ -116,8 +151,67 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int getScrabbleScore(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		//comparing array of numbers to array of letters with all uppercase string
+		string = string.toLowerCase();
+		//char ar[] = string.toCharArray(); // convert the String object to array of char
+		//int[] scores = new int[]{1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10};
+		int totalScore = 0;
+
+		// iterate over the array using the for-each loop.       
+//		for(char c: ar){
+//		    if(c == 'a',)
+//		}
+//		Matcher matcher = Pattern.compile("[aeioulnrst]").matcher(string);
+//		while(matcher.find()) {
+//			totalScore += 1;
+//		}
+		for(int i = 0; i < string.length(); i++)
+		     switch(string.charAt(i)) {
+		         case 'a':
+		         case 'e':
+		         case 'i':
+		         case 'o':
+		         case 'u':
+		         case 'l':
+		         case 'n':
+		         case 'r':
+		         case 's':
+		         case 't':
+		             totalScore += 1;
+		             break;
+		         case 'd':
+		         case 'g':
+		        	 totalScore += 2;
+		        	 break;
+		         case 'b':
+		         case 'c':
+		         case 'm':
+		         case 'p':
+		        	 totalScore += 3;
+		        	 break;
+		         case 'f':
+		         case 'h':
+		         case 'v':
+		         case 'w':
+		         case 'y':
+		        	 totalScore += 4;
+		        	 break;
+		         case 'k':
+		        	 totalScore += 5;
+		        	 break;
+		         case 'j':
+		         case 'x':
+		        	 totalScore += 8;
+		        	 break;
+		         case 'q':
+		         case 'z':
+		        	 totalScore += 10;
+		        	 break;
+		         default:
+		        	 System.out.println("Invalid Character");
+		        	 break;
+		     }
+		return totalScore;
 	}
 
 	/**
@@ -152,8 +246,13 @@ public class EvaluationService {
 	 * NANP-countries, only 1 is considered a valid country code.
 	 */
 	public String cleanPhoneNumber(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		//clean up the numbers and throw IllegalArgumentException if > 10 num or < 10 num
+		//store result in new string, replace all non-numeric characters with blank spaces
+		String phoneNum = string.replaceAll("[^0-9]", "");
+		if(phoneNum.length() != 10) {
+			throw new IllegalArgumentException("Invalid Number");
+		}
+		return phoneNum;
 	}
 
 	/**
@@ -166,8 +265,28 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Map<String, Integer> wordCount(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		//step 1: identify words in a string
+		//step 2: count occurrences of each word in that string
+		//step 3: return the name of each word and the number of occurrences in one string
+		//the regex is string
+		//look into split
+		//map.put(key, value)
+		//map.get(key) returns value
+		//stringName.split(" ") returns array of strings, each string is a word
+		Map<String, Integer> numOcc = new HashMap<String, Integer>();
+		String[] splitWords = string.split("\\W+");
+
+		//for each word in the array
+		for(int i = 0; i < splitWords.length; i++) {
+			if(!numOcc.containsKey(splitWords[i])) {
+				numOcc.put(splitWords[i], 1);
+			}
+			else {
+				numOcc.put(splitWords[i], (Integer) numOcc.get(splitWords[i]) + 1);	
+			}
+		}
+
+		return numOcc;
 	}
 
 	/**
@@ -246,8 +365,16 @@ public class EvaluationService {
 	 * @return
 	 */
 	public String toPigLatin(String string) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		//first determine if first letter of the string is a vowel, if it is then add -ay to the end
+		//second if it starts with a consonant sound, move all of the letters to the end until reaching a vowel
+		//to the end of the word
+		//lastly separate each word out to handle multiple words 
+		//String[] splitWords = string.split("\\W+");
+		char firstLetter = string.charAt(0);
+		string = string.substring(1);
+		string = string + firstLetter + "ay";
+		
+		return string;
 	}
 
 	/**
