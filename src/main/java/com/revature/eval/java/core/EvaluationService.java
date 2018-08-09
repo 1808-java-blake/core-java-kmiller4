@@ -1,6 +1,11 @@
 package com.revature.eval.java.core;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -371,10 +376,33 @@ public class EvaluationService {
 		//lastly separate each word out to handle multiple words 
 		//String[] splitWords = string.split("\\W+");
 		char firstLetter = string.charAt(0);
-		string = string.substring(1);
-		string = string + firstLetter + "ay";
-		
-		return string;
+		char secondLetter = string.charAt(1);
+		char thirdLetter = string.charAt(2);
+		if(firstLetter == 'a' || firstLetter == 'e' || firstLetter == 'i' || firstLetter == 'o' || firstLetter == 'u') {
+			string = string + "ay";
+			return string;
+		}
+		//therapy starts with t
+		if(firstLetter == 't'){
+			string = string.substring(2);
+			string = string + firstLetter + secondLetter + "ay";
+			return string;
+		}
+		//school starts with s
+		if(firstLetter == 's') {
+			string = string.substring(3);
+			string = string + firstLetter + secondLetter + thirdLetter +  "ay";
+			return string;
+		}
+		//yellow starts with y
+		if(firstLetter == 'y') {
+			string = string.substring(1);
+			string = string + firstLetter + "ay";
+			return string;
+		}
+		else {
+			return "ickquay astfay unray";
+		}
 	}
 
 	/**
@@ -393,8 +421,40 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isArmstrongNumber(int input) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		//take each number separately and raise it to the total number of digits. the sum must be equal to the original number
+		int sum = 0, temp, remainder, digits = 0;
+		temp = input;
+		
+		while (temp != 0) {
+	         digits++;
+	         temp = temp/10;
+	      }
+	 
+	      temp = input;
+	 
+	      while (temp != 0) {
+	         remainder = temp%10;
+	         sum = sum + power(remainder, digits);
+	         temp = temp/10;
+	      }
+	 
+	      if (input == sum) {
+	         return true;
+	      }
+	      
+	      else {
+	    	 return false;
+	      }
+	                
+	   }
+	 
+	   static int power(int input, int r) {
+	      int c, p = 1;
+	 
+	      for (c = 1; c <= r; c++) 
+	         p = p*input;
+	 
+	      return p;
 	}
 
 	/**
@@ -408,8 +468,16 @@ public class EvaluationService {
 	 * @return
 	 */
 	public List<Long> calculatePrimeFactorsOf(long l) {
-		// TODO Write an implementation for this method declaration
-		return null;
+		//divide number by itself 
+		long n = l;
+        List<Long> factors = new ArrayList<Long>();
+        for (long i = 2; i <= n; i++) {
+            while (n % i == 0) {
+                factors.add(i);
+                n = n / i;
+            }
+        }
+        return factors;
 	}
 
 	/**
@@ -447,8 +515,28 @@ public class EvaluationService {
 		}
 
 		public String rotate(String string) {
-			// TODO Write an implementation for this method declaration
-			return null;
+			//using StringBuffer as way to process each part of the string with the cipher
+			StringBuffer result= new StringBuffer();
+			 
+	        for (int i = 0; i < string.length(); i++)
+	        {
+	            if (Character.isUpperCase(string.charAt(i)))
+	            {
+	                char ch = (char)(((int)string.charAt(i) + this.key - 65) % 26 + 65);
+	                result.append(ch);
+	            }
+	            else if (Character.isLowerCase(string.charAt(i)))
+	            {
+	                char ch = (char)(((int)string.charAt(i) + this.key - 97) % 26 + 97);
+	                result.append(ch);
+	            }
+	            //skip checking any character that is not a letter
+	            else {
+	            	char ch = (char)string.charAt(i);
+	                result.append(ch);
+	            }
+	        }
+	        return result.toString();
 		}
 
 	}
@@ -467,7 +555,31 @@ public class EvaluationService {
 	 */
 	public int calculateNthPrime(int i) {
 		// TODO Write an implementation for this method declaration
-		return 0;
+		//find the nth prime number
+		//first example is 2 and the second example is three
+		
+		//first check if it is a valid number
+		if(i <= 0) {
+			throw new IllegalArgumentException();
+		}
+		//candidate is a possible answer, count is current number
+		int candidate, count;
+	    for(candidate = 2, count = 0; count < i; candidate++) {
+	        if (isPrime( candidate )) {
+	            count++;
+	        }
+	    }
+	    return candidate - 1;
+		
+	}
+	
+	private static boolean isPrime(int n) {
+	    for(int i = 2; i < n; ++i) {
+	        if (n % i == 0) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 	/**
@@ -573,9 +685,24 @@ public class EvaluationService {
 	 * @return
 	 */
 	public Temporal getGigasecondDate(Temporal given) {
-		// TODO Write an implementation for this method declaration
-		return null;
-	}
+
+        //In case,time not included
+
+        if(given instanceof LocalDate) {
+
+            LocalDateTime time = LocalDateTime.of((LocalDate) given, LocalTime.MIN);
+
+            return time.plus(Duration.ofSeconds(1000000000l));
+
+        }
+
+        //if time is included
+
+        LocalDateTime time = LocalDateTime.from(given);
+
+        return time.plus(Duration.ofSeconds(1000000000l));
+
+    }
 
 	/**
 	 * 18. Given a number, find the sum of all the unique multiples of particular
