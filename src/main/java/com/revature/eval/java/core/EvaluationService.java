@@ -13,6 +13,7 @@ import java.util.regex.*;
 
 public class EvaluationService {
 
+
 	/**
 	 * 1. Without using the StringBuilder or StringBuffer class, write a method that
 	 * reverses a String. Example: reverse("example"); -> "elpmaxe"
@@ -562,7 +563,7 @@ public class EvaluationService {
 		if(i <= 0) {
 			throw new IllegalArgumentException();
 		}
-		//candidate is a possible answer, count is current number
+		//candidate is current number, count is nth prime number
 		int candidate, count;
 	    for(candidate = 2, count = 0; count < i; candidate++) {
 	        if (isPrime( candidate )) {
@@ -616,6 +617,9 @@ public class EvaluationService {
 		 */
 		public static String encode(String string) {
 			// TODO Write an implementation for this method declaration
+			//compare element of arraylist with alphabet to arraylist with backwards alphabet and swap values
+			String alphabet = "abcdefghijklmnopqrstuvwxyz";
+			
 			return null;
 		}
 
@@ -654,8 +658,45 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isValidIsbn(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+//		string = string.replace("-", "");
+//		String[] list = string.split("");
+		
+		if ( string == null )
+        {
+            return false;
+        }
+
+        //remove any hyphens
+        string = string.replaceAll( "-", "" );
+
+        //must be a 10 digit ISBN
+        if ( string.length() != 10 )
+        {
+            return false;
+        }
+
+        try
+        {
+            int tot = 0;
+            for ( int i = 0; i < 9; i++ )
+            {
+                int digit = Integer.parseInt( string.substring( i, i + 1 ) );
+                tot += ((10 - i) * digit);
+            }
+
+            String checksum = Integer.toString( (11 - (tot % 11)) % 11 );
+            if ( "10".equals( checksum ) )
+            {
+                checksum = "X";
+            }
+
+            return checksum.equals( string.substring( 9 ) );
+        }
+        catch ( NumberFormatException nfe )
+        {
+            //to catch invalid ISBNs that have non-numeric characters in them
+            return false;
+        }
 	}
 
 	/**
@@ -673,7 +714,18 @@ public class EvaluationService {
 	 */
 	public boolean isPangram(String string) {
 		// TODO Write an implementation for this method declaration
-		return false;
+		final int n = 26;
+		
+		//if less than 26 characters it can't have every letter
+		if (string.length() < n) {
+	           return false;
+	        }
+	        for (char c = 'a'; c <= 'z'; c++) {
+	            if ((string.indexOf(c) < 0) && (string.indexOf((char)(c + 32)) < 0)) {
+	               return false;
+	            }
+	        }
+	    return true;
 	}
 
 	/**
@@ -719,6 +771,19 @@ public class EvaluationService {
 	 */
 	public int getSumOfMultiples(int i, int[] set) {
 		// TODO Write an implementation for this method declaration
+		     
+//		for(int temp =0; temp < 1000 ; temp++){
+//	        if(temp % 3 == 0){
+//	            x.add(temp);
+//	            
+//	            totalforthree += temp;
+//	            
+//	        } else if(temp % 5 == 0){
+//	            y.add(temp);
+//	            
+//	            int totalforfive = temp;
+//	        }
+//	    }
 		return 0;
 	}
 
@@ -759,8 +824,34 @@ public class EvaluationService {
 	 * @return
 	 */
 	public boolean isLuhnValid(String string) {
-		// TODO Write an implementation for this method declaration
-		return false;
+		int sum = 0;
+        boolean alternate = false;
+        
+        //check if string contains non numeric characters
+        for (int i = 0; i < string.length(); i++) {
+
+            //If we find a non-digit character we return false.
+            if (!Character.isLetter(string.charAt(i)) && !Character.isWhitespace(string.charAt(i)))
+                return false;
+        }
+        
+        string = string.replaceAll("[^\\d]", "");
+        
+        for (int i = string.length() - 1; i >= 0; i--)
+        {
+                int n = Integer.parseInt(string.substring(i, i + 1));
+                if (alternate)
+                {
+                        n *= 2;
+                        if (n > 9)
+                        {
+                                n = (n % 10) + 1;
+                        }
+                }
+                sum += n;
+                alternate = !alternate;
+        }
+        return (sum % 10 == 0);
 	}
 
 	/**
@@ -791,8 +882,117 @@ public class EvaluationService {
 	 * @return
 	 */
 	public int solveWordProblem(String string) {
-		// TODO Write an implementation for this method declaration
-		return 0;
+		String[] s1 = string.split(" ");
+		for(int i = 0; i < s1.length; i++) {
+			s1[i] = s1[i].replace("?", "");
+		}
+		if(string.contains("plus")) {
+			return Integer.valueOf(s1[2]) + Integer.valueOf(s1[4]) ;
+		}
+		//subtract
+		if(string.contains("minus")) {
+			return Integer.valueOf(s1[2])  - Integer.valueOf(s1[4]) ;
+		}
+		//multiply
+		if(string.contains("multiplied")) {
+			return Integer.valueOf(s1[2])  * Integer.valueOf(s1[5]) ;
+		}
+		//divide
+		else {
+			return Integer.valueOf(s1[2])  / Integer.valueOf(s1[5]) ;
+		}
+		
+		
+		//first search string for the words plus, minus, multiplied, and divided
+		//then with if statements depending on which one it is:
+		//toCharArray for the numbers and toInt them to perform the action and return result
+//		String numbers = string.replaceAll("[^\\d-]", "");
+//		System.out.println(numbers);
+//		char arr[] = numbers.toCharArray();
+		
+		//remove all of the spaces and put each word in an array
+		//example case 1 string[] = [What,is,1,plus,1]?
+//		String[] s1 = string.split(" ");
+//		//store boolean to tell if next digit is negative
+//		boolean nextNumIsNegative = false;
+//		//ArrayList
+//		ArrayList<Integer> arr = new ArrayList<>();
+//		int doubleCharacters = 0; //maximum is two digits
+//		boolean hasTwoDigits = false;
+//		//for each word in the problem
+//		for (String s2 : s1) {
+//			//for each character in the word
+//			char[] ch = s2.toCharArray();
+//			for (int i = 0; i < ch.length - 1; i++) {
+//				//if character is hyphen next number will be negative
+//				if(ch[i] == '-' ) {
+//					nextNumIsNegative = true;
+//				}
+//				//if character is a number, check for the next character in the list if it is also a letter
+//
+//				
+//				if(Character.isDigit(ch[i])) {
+//					
+//					//check if character is two digits by saying is the next character also a digit?
+//					if(Character.isDigit(ch[i + 1])) {
+//						hasTwoDigits = true;
+//					}
+//					//character is a one-digit negative number
+//					if(nextNumIsNegative && !hasTwoDigits) {
+//						arr.add(Character.getNumericValue(ch[i] * - 1));
+//						nextNumIsNegative = false;
+//						doubleCharacters++;
+//					}
+//					
+//					//if character is a two digit negative number, set it to negative and store it
+//					if(nextNumIsNegative && hasTwoDigits) {
+//						arr.add(Character.getNumericValue(ch[i] + Character.getNumericValue(ch[i + 1]) * - 1));
+//						nextNumIsNegative = false;
+//						doubleCharacters++;
+//					}
+//					
+//					//if character is a one digit positive number
+//					
+//					if(!nextNumIsNegative && !hasTwoDigits) {
+//						arr.add(Character.getNumericValue(ch[i]));
+//						doubleCharacters++;
+//					}
+//					
+//					//if character is a two digit positive number
+//					if(!nextNumIsNegative && hasTwoDigits) {
+//						arr.add(Character.getNumericValue(ch[i] + Character.getNumericValue(ch[i + 1])));
+//						doubleCharacters++;
+//					}
+//					
+//					
+//					else {
+//						arr.add(Character.getNumericValue(ch[i]));
+//						doubleCharacters++;
+//					}
+//				}
+//				if(doubleCharacters > 1) {
+//					doubleCharacters = 0;
+//					break;
+//				}
+//			}
+//		}
+//		
+//		//add
+//		if(string.contains("plus")) {
+//			return arr.get(0) + arr.get(1);
+//		}
+//		//subtract
+//		if(string.contains("minus")) {
+//			return arr.get(0) - arr.get(1);
+//		}
+//		//multiply
+//		if(string.contains("multiplied")) {
+//			return arr.get(0) * arr.get(1);
+//		}
+//		//divide
+//		else {
+//			return arr.get(0) / arr.get(1);
+//		}
 	}
 
 }
